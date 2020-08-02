@@ -1,0 +1,62 @@
+/*--------------------------------------------------------------
+  Image Captcha
+--------------------------------------------------------------*/
+.captcha-image, .wpcf7-cf7ic {
+    display: block;
+}
+.cf7ic_instructions {
+	display: block;
+}
+
+.captcha-image .cf7ic_instructions span {
+    color: red;
+    font-weight: bold;
+}
+
+.captcha-image i {
+    font-size: 60px;
+    color: #c9c9c9;
+}
+
+.captcha-image .choices:after {
+	display: table;
+	content: "";
+	clear: both;
+}
+
+.captcha-image .choices{
+	display: block;
+	background: #FFF;
+	border: 1px solid #c9c9c9;
+	padding: 15px;
+}
+
+.captcha-image label {
+    display: block;
+	float: left;
+	width: calc((100% - 46px) / 4);
+	margin: 0 0 0 15px;
+	text-align: center;
+}
+
+.captcha-image label:first-child {
+	margin-left: 0;
+	clear: both;
+}
+
+.captcha-image label > input{
+  display:none;
+}
+
+.captcha-image label > input + i{ 
+  cursor:pointer;
+}
+
+.captcha-image label > input:checked + i,
+.captcha-image label:hover > input + i{
+	color: #4e4e4e;
+}
+
+.kc_captcha .wpcf7-not-valid .captcha-image label > input:checked + i {
+	color: #d39a41;
+}

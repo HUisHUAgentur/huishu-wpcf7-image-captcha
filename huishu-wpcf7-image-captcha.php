@@ -2,7 +2,7 @@
 /*
 Plugin Name: HUisHU WPCF7 Image Captcha
 Description: Image Captcha for WPCF7
-Version:     1.4
+Version:     1.5
 Author:      HUisHU. Digitale Kreativagentur OHG.
 License:     GPL2
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -133,15 +133,19 @@ function call_cf7ic( $tag ) {
 			$value = "dancer"; 
 		}
 		$output .= '<label><input type="radio" name="kc_captcha" value="'. $value .'" /><i class="icon-'. $image .'"></i></label>';
-	}
+    }
+    if(function_exists('wpm')){
+        $question = __('[:de]Bist du ein Mensch? Dann klicke bitte auf '.__($choice[$human]).'.[:en]Are you human? Then click the '.__($choice[$human]).'.[:]');
+    } else {
+        $question = __('Bist du ein Mensch? Dann klicke bitte auf '.$choice[$human].'.');
+    }
     $output .= '
     </span></span>
     <span style="display:none">
         <input type="text" name="kc_honeypot">
     </span>';
 	$output.= '<span class="cf7ic_instructions">';
-	$output .= __('Bist du ein Mensch?').' ';
-	$output .= __('Dann klicke bitte auf').' '.$choice[$human].'.';
+	$output.=$question;
 	$output.='</span>';
 					
 	$myCustomField = sprintf(
@@ -167,16 +171,30 @@ function cf7ic_check_if_spam( $result, $tag ) {
 
     if(!empty($kc_val1) && $kc_val1 != 'kc_human' ) {
         //$tag->name = "kc_captcha";
-							//	var_dump('hallp');
-        $result->invalidate( $tag, 'Bitte wähle das korrekte Symbol aus.' );
+                            //	var_dump('hallp');
+        if(function_exists('wpm')){
+            $result->invalidate( $tag, '[:de]Bitte wähle das korrekte Symbol aus.[:en]Please choose the correct symbol.' );
+        } else {
+            $result->invalidate( $tag, 'Bitte wähle das korrekte Symbol aus.' );
+        }
     }
     if(empty($kc_val1) ) {
         //$tag->name = "kc_captcha";
-        $result->invalidate( $tag, 'Bitte wähle ein Symbol aus.' );
+        if(function_exists('wpm')){
+            $result->invalidate( $tag, '[:de]Bitte wähle ein Symbol aus.[:en]Please choose a symbol.' );
+        } else {
+            $result->invalidate( $tag, 'Bitte wähle ein Symbol aus.' );
+        }
+        
     }
     if(!empty($kc_val2) ) {
         //$tag->name = "kc_captcha";
-        $result->invalidate( $tag, wpcf7_get_message( 'spam' ) );
+        
+        if(function_exists('wpm')){
+            $result->invalidate( $tag, __(wpcf7_get_message( 'spam' )) );
+        } else {
+            $result->invalidate( $tag, wpcf7_get_message( 'spam' ) );
+        }
     }
     //var_dump($result);
 				return $result;

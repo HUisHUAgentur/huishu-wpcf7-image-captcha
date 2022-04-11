@@ -145,7 +145,7 @@ function call_cf7ic( $tag ) {
     // Pick a number between 0-2 and use it to determine which array item will be used as the answer
     $human = rand(0,3);
 	$humankey = array_keys($choices)[$human];
-    $output = '<span class="captcha-image" '.$style.'>';
+    $output = '<span class="captcha-image">';
 	$i = -1;
 	$output.='<span class="choices">';
 	foreach($choices as $title => $image) {

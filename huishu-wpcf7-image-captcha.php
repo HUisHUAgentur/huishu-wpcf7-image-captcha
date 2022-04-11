@@ -2,7 +2,7 @@
 /*
 Plugin Name: HUisHU WPCF7 Image Captcha
 Description: Image Captcha for WPCF7
-Version:     1.5.1
+Version:     2.0
 Author:      HUisHU. Digitale Kreativagentur OHG.
 License:     GPL2
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -58,10 +58,33 @@ $myUpdateChecker = Puc_v4_Factory::buildUpdateChecker(
 	'huishu-essentials-wpcf7-image-captcha'
 );
 
+/**
+ * Add Label Field to Essential Iconfont Helper
+ */
+function hu_cf7ic_add_label_field_to_iconfont_helper($fields, $icon, $name){
+    $fields['imagecaptcha'] = 'Captcha-Beschriftung für Icon '.$icon.' (<i class="icon-'.$icon.'"></i>)';
+    return $fields;
+}
+add_filter('hu_ep_ih_icon_fields_to_save','hu_cf7ic_add_label_field_to_iconfont_helper',10,3);
 
 function get_cf7ic_without_cf7($name = 'kc_captcha',$id = 'kc_captcha',$class = 'wpcf7-form-control-wrap imagecaptcha'){
-	$tag = new WPCF7_FormTag(array('name' => 'imagecaptcha*','options' => array('id' => 'cf7ic_captcha')));
+	$tag = new WPCF7_FormTag(array('name' => $name, 'type' => 'cf7ic*', 'options' => array('id' => 'cf7ic_captcha')));
 	return call_cf7ic($tag);
+}
+
+function validate_cf7ic_without_cf7($name = 'kc_captcha'){
+    $kc_val1 = isset( $_POST[$name] ) ? trim( $_POST[$name] ) : '';   // Get selected icon value
+    $kc_val2 = isset( $_POST[cf7ic_get_honeypot_field_name()] ) ? trim( $_POST[cf7ic_get_honeypot_field_name()] ) : ''; // Get honeypot value
+    if(empty($kc_val1) ) {
+        return false;    
+    }
+    if(!($kc_val1 == cf7ic_get_human_field_value())) {
+        return false;
+    }
+    if(!empty($kc_val2) ) {
+        return false;
+    }
+	return true;
 }
 
 /**
@@ -70,7 +93,7 @@ function get_cf7ic_without_cf7($name = 'kc_captcha',$id = 'kc_captcha',$class = 
 add_action( 'wpcf7_init', 'add_shortcode_cf7ic' );
 function add_shortcode_cf7ic() {
     wpcf7_add_form_tag( 'cf7ic', 'call_cf7ic', array( 'name-attr' => true ) );
-				wpcf7_add_form_tag( 'cf7ic*', 'call_cf7ic', array( 'name-attr' => true ) );
+	wpcf7_add_form_tag( 'cf7ic*', 'call_cf7ic', array( 'name-attr' => true ) );
 }
 
 /**
@@ -82,7 +105,7 @@ function call_cf7ic( $tag ) {
 	if($csspath = hu_ep_ih_get_css_file_url()){
 		wp_enqueue_style('hu-ep-ih-iconfont-style'); 
     }
-	$glyphs = hu_ep_ih_get_all_icons();
+	$glyphs = hu_ep_ih_get_all_icons( 'imagecaptcha' );
 	if ( empty( $tag->name ) ) {
         return '';
     }
@@ -128,11 +151,11 @@ function call_cf7ic( $tag ) {
 	foreach($choices as $title => $image) {
 		$i++;
 		if($i == $human) { 
-			$value = "kc_human"; 
+			$value = cf7ic_get_human_field_value(); 
 		} else { 
-			$value = "dancer"; 
+			$value = cf7ic_get_false_field_value($i); 
 		}
-		$output .= '<label><input type="radio" name="kc_captcha" value="'. $value .'" /><i class="icon-'. $image .'"></i></label>';
+		$output .= '<label><input type="radio" name="'.$tag->name.'" value="'. $value .'" /><i class="icon-'. $image .'"></i></label>';
     }
     if(function_exists('wpm')){
         $question = __('[:de]Bist du ein Mensch? Dann klicke bitte auf '.__($choice[$human]).'.[:en]Are you human? Then click the '.__($choice[$human]).'.[:]');
@@ -142,7 +165,7 @@ function call_cf7ic( $tag ) {
     $output .= '
     </span></span>
     <span style="display:none">
-        <input type="text" name="kc_honeypot">
+        <input type="text" name="'.cf7ic_get_honeypot_field_name().'">
     </span>';
 	$output.= '<span class="cf7ic_instructions">';
 	$output.=$question;
@@ -159,45 +182,53 @@ function call_cf7ic( $tag ) {
 	return $myCustomField;
 }
 
+function cf7ic_get_honeypot_field_name(){
+    return base64_encode('kc_honeypot');
+}
+
+function cf7ic_get_human_field_value(){
+    return base64_encode('kc_human');
+}
+
+function cf7ic_get_false_field_value($num){
+    return base64_encode('kc_dancer'.$num);
+}
+
 /**
  * Custom validator
  */
  add_filter('wpcf7_validate_cf7ic*','cf7ic_check_if_spam', 10, 2);
  add_filter('wpcf7_validate_cf7ic','cf7ic_check_if_spam', 10, 2);
 function cf7ic_check_if_spam( $result, $tag ) {
+    $name = $tag->name;
+    $kc_val1 = isset( $_POST[$name] ) ? trim( $_POST[$name] ) : '';   // Get selected icon value
+    $honeypot_name = cf7ic_get_honeypot_field_name();
+    $kc_val2 = isset( $_POST[$honeypot_name] ) ? trim( $_POST[$honeypot_name] ) : ''; // Get honeypot value
 
-    $kc_val1 = isset( $_POST['kc_captcha'] ) ? trim( $_POST['kc_captcha'] ) : '';   // Get selected icon value
-    $kc_val2 = isset( $_POST['kc_honeypot'] ) ? trim( $_POST['kc_honeypot'] ) : ''; // Get honeypot value
-
-    if(!empty($kc_val1) && $kc_val1 != 'kc_human' ) {
-        //$tag->name = "kc_captcha";
-                            //	var_dump('hallp');
+    if(!empty($kc_val1) && $kc_val1 != cf7ic_get_human_field_value() ) {
         if(function_exists('wpm')){
             $result->invalidate( $tag, '[:de]Bitte wähle das korrekte Symbol aus.[:en]Please choose the correct symbol.' );
         } else {
             $result->invalidate( $tag, 'Bitte wähle das korrekte Symbol aus.' );
         }
     }
+
     if(empty($kc_val1) ) {
-        //$tag->name = "kc_captcha";
         if(function_exists('wpm')){
             $result->invalidate( $tag, '[:de]Bitte wähle ein Symbol aus.[:en]Please choose a symbol.' );
         } else {
             $result->invalidate( $tag, 'Bitte wähle ein Symbol aus.' );
         }
-        
     }
+
     if(!empty($kc_val2) ) {
-        //$tag->name = "kc_captcha";
-        
         if(function_exists('wpm')){
             $result->invalidate( $tag, __(wpcf7_get_message( 'spam' )) );
         } else {
             $result->invalidate( $tag, wpcf7_get_message( 'spam' ) );
         }
     }
-    //var_dump($result);
-				return $result;
+	return $result;
 }
 
 

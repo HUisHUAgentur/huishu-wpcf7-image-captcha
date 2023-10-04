@@ -191,7 +191,8 @@ function call_cf7ic($tag) {
     if (function_exists('wpm')) {
         $question = __('[:de]Bist du ein Mensch? Dann klicke bitte auf ' . __($choice[$human]) . '.[:en]Are you human? Then click the ' . __($choice[$human]) . '.[:]');
     } else {
-        $question = __('Are you human? Then click the ', 'huishu-image-captcha') . __($choice[$human], 'huishu-image-captcha') . '.';
+        $question = wp_sprintf(__('Are you human? Then click the %s.', 'huishu-image-captcha'), __($choice[$human], 'huishu-image-captcha'));
+        // $question = __('Are you human? Then click the ', 'huishu-image-captcha') . __($choice[$human], 'huishu-image-captcha') . '.';
     }
     $output .= '
     </span></span>

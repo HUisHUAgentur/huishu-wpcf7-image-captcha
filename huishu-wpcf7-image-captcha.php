@@ -17,8 +17,12 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-
 require_once(plugin_dir_path(__FILE__) . 'class-tgm-plugin-activation.php');
+
+function wpdocs_load_textdomain() {
+	load_plugin_textdomain( 'hu-wpcf7-image-captcha', false, dirname( plugin_basename( __FILE__ ) ) . '/languages' ); 
+}
+add_action( 'init', 'wpdocs_load_textdomain' );
 
 function hu_wpcf7_image_captcha_add_required_plugins_to_tgmpa() {
     $plugins = array(

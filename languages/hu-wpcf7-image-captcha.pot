@@ -2,14 +2,14 @@
 # This file is distributed under the GPL2.
 msgid ""
 msgstr ""
-"Project-Id-Version: HUisHU WPCF7 Image Captcha 2.1\n"
+"Project-Id-Version: HUisHU WPCF7 Image Captcha 2.2.2\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/hu-wpcf7-image-captcha\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2023-12-21T10:07:03+00:00\n"
+"POT-Creation-Date: 2023-12-21T10:22:04+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.9.0\n"
 "X-Domain: hu-wpcf7-image-captcha\n"
@@ -26,14 +26,14 @@ msgstr ""
 msgid "HUisHU. Digitale Kreativagentur GmbH"
 msgstr ""
 
-#: huishu-wpcf7-image-captcha.php:206
-msgid "Are you human? Then click the %s"
+#: huishu-wpcf7-image-captcha.php:212
+msgid "Are you human? Then click the %s."
 msgstr ""
 
-#: huishu-wpcf7-image-captcha.php:250
+#: huishu-wpcf7-image-captcha.php:256
 msgid "Please choose the correct symbol."
 msgstr ""
 
-#: huishu-wpcf7-image-captcha.php:254
+#: huishu-wpcf7-image-captcha.php:260
 msgid "Please choose a symbol."
 msgstr ""

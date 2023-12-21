@@ -2,7 +2,7 @@
 /*
 Plugin Name: HUisHU WPCF7 Image Captcha
 Description: Image Captcha for WPCF7
-Version:     2.2.2
+Version:     2.2.3
 Author:      HUisHU. Digitale Kreativagentur GmbH
 License:     GPL2
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -209,7 +209,7 @@ function call_cf7ic($tag) {
         }
         $output .= '<label><input type="radio" name="' . $tag->name . '" value="' . $value . '" /><i class="icon-' . $image . '"></i></label>';
     }
-    $question = sprintf( __( 'Are you human? Then click the %s', 'hu-wpcf7-image-captcha' ), $choice[$human]);
+    $question = sprintf( __( 'Are you human? Then click the %s.', 'hu-wpcf7-image-captcha' ), $choice[$human]);
     $output .= '
     </span></span>
     <span style="display:none">

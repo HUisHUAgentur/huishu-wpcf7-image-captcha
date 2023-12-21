@@ -5,8 +5,8 @@ msgstr ""
 "Project-Id-Version: HUisHU WPCF7 Image Captcha 2.1\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/hu-wpcf7-image-"
 "captcha\n"
-"POT-Creation-Date: 2023-12-21T10:07:03+00:00\n"
-"PO-Revision-Date: 2023-12-21 11:11+0100\n"
+"POT-Creation-Date: 2023-12-21T10:22:04+00:00\n"
+"PO-Revision-Date: 2023-12-21 11:22+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: de_DE@formal\n"
@@ -28,14 +28,14 @@ msgstr ""
 msgid "HUisHU. Digitale Kreativagentur GmbH"
 msgstr ""
 
-#: huishu-wpcf7-image-captcha.php:206
-msgid "Are you human? Then click the %s"
-msgstr "Sind Sie ein Mensch? Dann klicken Sie bitte %s an"
+#: huishu-wpcf7-image-captcha.php:212
+msgid "Are you human? Then click the %s."
+msgstr "Sind Sie ein Mensch? Dann klicken Sie bitte %s an."
 
-#: huishu-wpcf7-image-captcha.php:250
+#: huishu-wpcf7-image-captcha.php:256
 msgid "Please choose the correct symbol."
 msgstr "Bitte wählen Sie das korrekte Symbol."
 
-#: huishu-wpcf7-image-captcha.php:254
+#: huishu-wpcf7-image-captcha.php:260
 msgid "Please choose a symbol."
 msgstr "Bitte wählen Sie ein Symbol."

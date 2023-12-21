@@ -1,0 +1,19 @@
+{
+    "name": "huishu/hu-wpcf7-image-captcha",
+    "type": "wordpress-plugin",
+    "description": "",
+    "keywords": [
+        "WordPress",
+        "Plugins"
+    ],
+    "license": "GPL-2.0-or-later",
+    "require": {
+        "php": ">=5.6"
+    },
+    "require-dev": {
+        "wp-cli/i18n-command": "^2.2.5"
+    },
+    "scripts": {
+        "make-pot": "wp i18n make-pot . languages/hu-wpcf7-image-captcha.pot"
+    }
+}

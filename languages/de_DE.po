@@ -1,0 +1,41 @@
+# Copyright (C) 2023 HUisHU. Digitale Kreativagentur GmbH
+# This file is distributed under the GPL2.
+msgid ""
+msgstr ""
+"Project-Id-Version: HUisHU WPCF7 Image Captcha 2.1\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/hu-wpcf7-image-"
+"captcha\n"
+"POT-Creation-Date: 2023-12-21T10:07:03+00:00\n"
+"PO-Revision-Date: 2023-12-21 11:09+0100\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: de_DE\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 3.4.1\n"
+"X-Domain: hu-wpcf7-image-captcha\n"
+
+#. Plugin Name of the plugin
+msgid "HUisHU WPCF7 Image Captcha"
+msgstr ""
+
+#. Description of the plugin
+msgid "Image Captcha for WPCF7"
+msgstr ""
+
+#. Author of the plugin
+msgid "HUisHU. Digitale Kreativagentur GmbH"
+msgstr ""
+
+#: huishu-wpcf7-image-captcha.php:206
+msgid "Are you human? Then click the %s"
+msgstr "Bist du ein Mensch? Dann klicke bitte %s an"
+
+#: huishu-wpcf7-image-captcha.php:250
+msgid "Please choose the correct symbol."
+msgstr "Bitte wähle das korrekte Symbol."
+
+#: huishu-wpcf7-image-captcha.php:254
+msgid "Please choose a symbol."
+msgstr "Bitte wähle ein Symbol."

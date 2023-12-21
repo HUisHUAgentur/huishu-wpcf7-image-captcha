@@ -2,10 +2,12 @@
 /*
 Plugin Name: HUisHU WPCF7 Image Captcha
 Description: Image Captcha for WPCF7
-Version:     2.1
+Version:     2.2
 Author:      HUisHU. Digitale Kreativagentur GmbH
 License:     GPL2
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
+Text Domain: hu-wpcf7-image-captcha
+Domain Path: /languages
 */
 
 /**
@@ -64,18 +66,31 @@ $myUpdateChecker->setBranch('ver2.0');
  * Add Label Field to Essential Iconfont Helper
  */
 function hu_cf7ic_add_label_field_to_iconfont_helper($fields, $icon, $name) {
-
-    // Check if WPML is active and if languages are set, if so, add a field for each language
-    $languages = apply_filters('wpml_active_languages', NULL);
-    if (!empty($languages)) {
-
-        foreach ($languages as $lang) {
-            $fields['imagecaptcha_' . $lang['language_code']] = 'Captcha-Beschriftung für Icon ' . $icon . ' (<i class="icon-' . $icon . '"></i>)' . ' (' . $lang['native_name'] . ')';
+    $langs = array();
+    // Check if WP Multilang is active
+    if(function_exists('wpm_get_languages')){
+        $languages = wpm_get_languages();
+        if( is_array( $languages ) ){
+            foreach( $languages as $code => $language ){
+                $langs[$code] = $language;
+            }
+        } 
+    } else {
+        // Check if WPML is active and if languages are set, if so, add a field for each language
+        $languages = apply_filters('wpml_active_languages', NULL);
+        if (!empty($languages)) {
+            foreach ($languages as $lang) {
+                $langs[$lang['language_code']] = $lang['native_name'];
+            }
         }
-        return $fields;
     }
-
-    $fields['imagecaptcha'] = 'Captcha-Beschriftung für Icon ' . $icon . ' (<i class="icon-' . $icon . '"></i>)';
+    if( ! empty( $langs ) ){
+        foreach( $langs as $code => $name ){
+            $fields['imagecaptcha_' . $code] = 'Captcha-Beschriftung für Icon ' . $icon . ' (<i class="icon-' . $icon . '"></i>)' . ' (' . $name . ')';
+        }
+    } else {
+        $fields['imagecaptcha'] = 'Captcha-Beschriftung für Icon ' . $icon . ' (<i class="icon-' . $icon . '"></i>)';
+    }   
     return $fields;
 }
 add_filter('hu_ep_ih_icon_fields_to_save', 'hu_cf7ic_add_label_field_to_iconfont_helper', 10, 3);
@@ -115,17 +130,19 @@ function add_shortcode_cf7ic() {
 function call_cf7ic($tag) {
     //$tag = new WPCF7_FormTag( $tag );
     wp_enqueue_style('huishu-wpcf7-image-captcha-style'); // enqueue css
-    if ($csspath = hu_ep_ih_get_css_file_url()) {
+    if ( $csspath = hu_ep_ih_get_css_file_url() ) {
         wp_enqueue_style('hu-ep-ih-iconfont-style');
     }
     $glyphs = '';
-
-    // Check if WPML is active and if languages are set
-    $active_language_code = apply_filters('wpml_current_language', NULL);
-
+    $lang = NULL;
+    if(function_exists('wpm_get_language')){
+        $lang = wpm_get_language();
+    } else {
+        $lang = apply_filters('wpml_current_language', NULL);
+    }
     // If languages are set, use the language code to get the correct icon set
-    if (!empty($active_language_code)) {
-        $glyphs = hu_ep_ih_get_all_icons('imagecaptcha_' . $active_language_code);
+    if (!empty($lang)) {
+        $glyphs = hu_ep_ih_get_all_icons('imagecaptcha_' . $lang);
     } else {
         $glyphs = hu_ep_ih_get_all_icons('imagecaptcha');
     }
@@ -180,7 +197,6 @@ function call_cf7ic($tag) {
 
 
     foreach ($choices as $title => $image) {
-
         $i++;
         if ($i == $human) {
             $value = cf7ic_get_human_field_value();
@@ -189,12 +205,7 @@ function call_cf7ic($tag) {
         }
         $output .= '<label><input type="radio" name="' . $tag->name . '" value="' . $value . '" /><i class="icon-' . $image . '"></i></label>';
     }
-    if (function_exists('wpm')) {
-        $question = __('[:de]Bist du ein Mensch? Dann klicke bitte auf ' . __($choice[$human]) . '.[:en]Are you human? Then click the ' . __($choice[$human]) . '.[:]');
-    } else {
-        $question = wp_sprintf(__('Are you human? Then click the %s.', 'huishu-image-captcha'), __($choice[$human], 'huishu-image-captcha'));
-        // $question = __('Are you human? Then click the ', 'huishu-image-captcha') . __($choice[$human], 'huishu-image-captcha') . '.';
-    }
+    $question = sprintf( __( 'Are you human? Then click the %s', 'hu-wpcf7-image-captcha' ), $choice[$human]);
     $output .= '
     </span></span>
     <span style="display:none">
@@ -211,7 +222,6 @@ function call_cf7ic($tag) {
         $output,
         $validation_error
     );
-    //return '<div class="wpcf7-form-control-wrap kc_captcha"><div class="wpcf7-form-control wpcf7-radio kc_captcha">'.$output.'</div></div>';
     return $myCustomField;
 }
 
@@ -239,27 +249,15 @@ function cf7ic_check_if_spam($result, $tag) {
     $kc_val2 = isset($_POST[$honeypot_name]) ? trim($_POST[$honeypot_name]) : ''; // Get honeypot value
 
     if (!empty($kc_val1) && $kc_val1 != cf7ic_get_human_field_value()) {
-        if (function_exists('wpm')) {
-            $result->invalidate($tag, '[:de]Bitte wähle das korrekte Symbol aus.[:en]Please choose the correct symbol.');
-        } else {
-            $result->invalidate($tag, __('Please choose the correct symbol.', 'huishu-image-captcha'));
-        }
+        $result->invalidate($tag, __('Please choose the correct symbol.', 'hu-wpcf7-image-captcha'));
     }
 
     if (empty($kc_val1)) {
-        if (function_exists('wpm')) {
-            $result->invalidate($tag, '[:de]Bitte wähle ein Symbol aus.[:en]Please choose a symbol.');
-        } else {
-            $result->invalidate($tag, __('Please choose a symbol.', 'huishu-image-captcha'));
-        }
+        $result->invalidate($tag, __('Please choose a symbol.', 'hu-wpcf7-image-captcha'));
     }
 
     if (!empty($kc_val2)) {
-        if (function_exists('wpm')) {
-            $result->invalidate($tag, __(wpcf7_get_message('spam')));
-        } else {
-            $result->invalidate($tag, wpcf7_get_message('spam'));
-        }
+        $result->invalidate($tag, wpcf7_get_message('spam'));    
     }
     return $result;
 }

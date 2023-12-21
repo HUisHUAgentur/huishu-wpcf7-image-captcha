@@ -2,7 +2,7 @@
 /*
 Plugin Name: HUisHU WPCF7 Image Captcha
 Description: Image Captcha for WPCF7
-Version:     2.2.1
+Version:     2.2.2
 Author:      HUisHU. Digitale Kreativagentur GmbH
 License:     GPL2
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -19,10 +19,10 @@ if (!defined('ABSPATH')) {
 
 require_once(plugin_dir_path(__FILE__) . 'class-tgm-plugin-activation.php');
 
-function wpdocs_load_textdomain() {
+function hu_wic_load_textdomain() {
 	load_plugin_textdomain( 'hu-wpcf7-image-captcha', false, dirname( plugin_basename( __FILE__ ) ) . '/languages' ); 
 }
-add_action( 'init', 'wpdocs_load_textdomain' );
+add_action( 'init', 'hu_wic_load_textdomain' );
 
 function hu_wpcf7_image_captcha_add_required_plugins_to_tgmpa() {
     $plugins = array(

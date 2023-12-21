@@ -2,7 +2,7 @@
 /*
 Plugin Name: HUisHU WPCF7 Image Captcha
 Description: Image Captcha for WPCF7
-Version:     2.2
+Version:     2.2.1
 Author:      HUisHU. Digitale Kreativagentur GmbH
 License:     GPL2
 License URI: https://www.gnu.org/licenses/gpl-2.0.html

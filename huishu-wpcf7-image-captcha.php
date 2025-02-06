@@ -2,7 +2,7 @@
 /*
 Plugin Name: HUisHU WPCF7 Image Captcha
 Description: Image Captcha for WPCF7
-Version:     2.2.4
+Version:     2.2.5
 Author:      HUisHU. Digitale Kreativagentur GmbH
 License:     GPL2
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -136,14 +136,16 @@ function add_shortcode_cf7ic() {
         'cf7ic', 
         'call_cf7ic', 
         array( 
-            'name-attr' => true 
+            'name-attr' => true,
+			'not-for-mail' => true,
         ) 
     );
 	wpcf7_add_form_tag( 
         'cf7ic*', 
         'call_cf7ic', 
         array( 
-            'name-attr' => true 
+            'name-attr' => true, 
+			'not-for-mail' => true,
         ) 
     );
 }
@@ -283,6 +285,44 @@ function cf7ic_get_false_field_value( $num ){
     return base64_encode('kc_dancer' . $num);
 }
 
+function cf7ic_captcha_ajax_refill( $items ){
+    if ( ! is_array( $items ) ) {
+		return $items;
+	}
+
+	$tags = wpcf7_scan_form_tags( array( 'type' => 'cf7ic' ) );
+
+	if ( empty( $tags ) ) {
+		return $items;
+	}
+
+	$refill = array();
+
+	foreach ( $tags as $tag ) {
+		$name = $tag->name;
+		$options = $tag->options;
+
+		if ( empty( $name ) ) {
+			continue;
+		}
+
+		$op = wpcf7_captchac_options( $options );
+
+		if ( $filename = wpcf7_generate_captcha( $op ) ) {
+			$captcha_url = wpcf7_captcha_url( $filename );
+			$refill[$name] = $captcha_url;
+		}
+	}
+
+	if ( ! empty( $refill ) ) {
+		$items['captcha'] = $refill;
+	}
+
+	return $items;
+}
+//add_filter( 'wpcf7_refill_response', 'cf7ic_ajax_refill', 10, 1 );
+//add_filter( 'wpcf7_feedback_response', 'cf7ic_captcha_ajax_refill', 10, 1 );
+
 /**
  * Custom validator
  */
@@ -329,41 +369,65 @@ function cf7ic_add_tag_generator() {
 	$tag_generator->add( 
         'cf7ic', 
     __( 'Image Captcha', 'contact-form-7-image-captcha' ),
-		'cf7ic_tag_generator' 
+		'cf7ic_tag_generator',
+        array( 'version' => '2' ) 
     );
 }
 
-function cf7ic_tag_generator( $contact_form, $args = '' ) {
-	$args = wp_parse_args( $args, array() ); ?>
-		<div class="control-box">
-		<table class="form-table">
-			<tbody>
-				<tr>
-				<th scope="row"><?php echo esc_html( __( 'Field type', 'contact-form-7' ) ); ?></th>
-				<td>
-					<fieldset>
-					<legend class="screen-reader-text"><?php echo esc_html( __( 'Field type', 'contact-form-7' ) ); ?></legend>
-					<label><input type="checkbox" name="required" /> <?php echo esc_html( __( 'Required field', 'contact-form-7' ) ); ?></label>
-					</fieldset>
-				</td>
-				</tr>
-				<tr>
-				<th scope="row"><label for="<?php echo esc_attr( $args['content'] . '-name' ); ?>"><?php echo esc_html( __( 'Name', 'contact-form-7' ) ); ?></label></th>
-				<td><input type="text" name="name" class="tg-name oneline" id="<?php echo esc_attr( $args['content'] . '-name' ); ?>" /></td>
-				</tr>
-			</tbody>
-		</table>
+function cf7ic_tag_generator( $contact_form, $options ) {
+    $field_types = array(
+		'cf7ic' => array(
+			'display_name' => __( 'HU Image Captcha', 'contact-form-7' ),
+			'heading' => __( 'HU Image Captcha', 'contact-form-7' ),
+			'description' => __( 'Generates a form-tag for an Image Captcha field.', 'contact-form-7' ),
+		),
+	);
+
+	$tgg = new WPCF7_TagGeneratorGenerator( $options['content'] );
+	?>
+    <header class="description-box">
+		<h3><?php
+			echo esc_html( $field_types['cf7ic']['heading'] );
+		?></h3>
+
+		<p><?php
+			$description = wp_kses(
+				$field_types['cf7ic']['description'],
+				array(
+					'a' => array( 'href' => true ),
+					'strong' => array(),
+				),
+				array( 'http', 'https' )
+			);
+
+			echo $description;
+		?></p>
+	</header>
+
+	<div class="control-box">
+		<?php
+			$tgg->print( 'field_type', array(
+				'with_required' => true,
+				'select_options' => array(
+					'cf7ic' => $field_types['cf7ic']['display_name'],
+				),
+			) );
+
+			$tgg->print( 'field_name' );			
+		?>
 	</div>
-	<div class="insert-box">
-		<input type="text" name="cf7ic" class="tag code" readonly="readonly" onfocus="this.select()" />
-		<div class="submitbox">
-			<input type="button" class="button button-primary insert-tag" value="<?php echo esc_attr( __( 'Insert Tag', 'contact-form-7' ) ); ?>" />
-		</div>
-	</div>
-<?php
+
+	<footer class="insert-box">
+		<?php
+			$tgg->print( 'insert_box_content' );
+
+			$tgg->print( 'mail_tag_tip' );
+		?>
+	</footer>
+    <?php
 }
-add_action( 'init', 'huishu_wpcf7_image_captcha_register_scripts' );
 
 function huishu_wpcf7_image_captcha_register_scripts(){
 	wp_register_style( 'huishu-wpcf7-image-captcha-style', plugins_url( 'huishu-wpcf7-image-captcha.css', __FILE__ ), array(), filemtime( plugin_dir_path( __FILE__ ) . 'huishu-wpcf7-image-captcha.css' ) );
 }
+add_action( 'init', 'huishu_wpcf7_image_captcha_register_scripts' );
